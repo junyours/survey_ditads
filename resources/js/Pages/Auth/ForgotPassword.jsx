@@ -3,7 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout'
 import { useForm } from '@inertiajs/react'
 import { Alert, Button } from '@material-tailwind/react'
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ status }) => {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
@@ -15,6 +15,13 @@ const ForgotPassword = () => {
 
     return (
         <GuestLayout>
+            {status && (
+                <Alert variant="ghost" color="green">
+                    <span className="text-sm">
+                        {status}
+                    </span>
+                </Alert>
+            )}
             {errors.email && (
                 <Alert variant="ghost" color="red">
                     <span className="text-sm">

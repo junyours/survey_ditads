@@ -214,7 +214,10 @@ class AdminController extends Controller
     {
         $survey = Survey::where('id', $request->survey_id)->first();
 
-        $responses = Response::with('answer.question')->where('survey_id', $survey->id)->get();
+        $responses = Response::with('answer.question')
+            ->whereHas('answer')
+            ->where('survey_id', $survey->id)
+            ->get();
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 

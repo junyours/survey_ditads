@@ -3,7 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { Link, useForm } from '@inertiajs/react';
 import { Alert, Button, Checkbox } from '@material-tailwind/react';
 
-const Login = () => {
+const Login = ({ status, canResetPassword }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -20,6 +20,13 @@ const Login = () => {
 
     return (
         <GuestLayout>
+            {status && (
+                <Alert variant="ghost" color="green">
+                    <span className="text-sm">
+                        {status}
+                    </span>
+                </Alert>
+            )}
             {(errors.email || errors.password) && (
                 <Alert variant="ghost" color="red">
                     <span className="text-sm">
@@ -34,13 +41,23 @@ const Login = () => {
                     <div className="space-y-2">
                         <Inpt value={data.password} onChange={(e) => setData('password', e.target.value)} label="Password" type='password' required />
                         <div className="flex justify-between items-center">
-                            <Checkbox checked={data.remember}
-                                onChange={(e) =>
-                                    setData('remember', e.target.checked)
-                                } color="green" label="Remember Me" labelProps={{ className: "text-sm font-normal text-blue-gray-500" }} />
-                            <Link href={route('password.request')}>
-                                <span className="text-blue-gray-500 text-sm cursor-pointer hover:underline hover:text-green-500">Forgot Password?</span>
-                            </Link>
+                            <label className="flex items-center cursor-pointer">
+                                <Checkbox
+                                    checked={data.remember}
+                                    onChange={(e) =>
+                                        setData('remember', e.target.checked)
+                                    }
+                                    color="green"
+                                />
+                                <span className="font-normal text-sm text-blue-gray-500">
+                                    Remember Me
+                                </span>
+                            </label>
+                            {canResetPassword && (
+                                <Link href={route('password.request')}>
+                                    <span className="text-blue-gray-500 text-sm cursor-pointer hover:underline hover:text-green-500">Forgot Password?</span>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>
