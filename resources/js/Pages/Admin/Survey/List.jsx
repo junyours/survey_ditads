@@ -1,7 +1,7 @@
 import Loader from "@/Components/Loader"
 import Tbl from "@/Components/Table"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout"
-import { Link, router, usePage } from "@inertiajs/react"
+import { Link, router } from "@inertiajs/react"
 import { Button } from "@material-tailwind/react"
 import axios from "axios"
 import { useEffect, useState } from "react"

@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Response;
 use App\Models\Survey;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class ViewerController extends Controller
 {

@@ -3,7 +3,7 @@ import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline'
 import { IconButton } from "@material-tailwind/react"
 import { useSidebar } from "@/Contexts/SidebarContext"
 import { usePage } from '@inertiajs/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useSecurity } from '@/Contexts/SecurityContext'
 
 const AuthenticatedLayout = ({ title = "", button, tab, children }) => {
