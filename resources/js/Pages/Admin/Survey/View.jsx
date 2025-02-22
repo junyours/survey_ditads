@@ -124,6 +124,7 @@ const View = () => {
         ],
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -136,7 +137,7 @@ const View = () => {
           datalabels: {
             color: '#000',
             anchor: 'end',
-            align: 'top',
+            align: 'end',
             font: {
               size: 14,
             },
@@ -144,8 +145,13 @@ const View = () => {
           },
         },
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
+          },
+          y: {
+            ticks: {
+              autoSkip: false,
+            },
           },
         },
       },
@@ -306,8 +312,8 @@ const View = () => {
                                 const isBarChart = question.option.length > 8
                                 const chartData = isBarChart ? barChartConfig(series, labels) : pieChartConfig(series, labels);
                                 return (
-                                  <div className={!isBarChart ? 'grid grid-cols-2 gap-4' : ''}>
-                                    <div className="w-full mx-auto h-[300px] sm:h-[400px]">
+                                  <div className={`grid gap-4 ${!isBarChart ? 'grid-cols-2' : ''} max-sm:grid-cols-1`}>
+                                    <div className={question.option.length > 10 ? 'h-[800px]' : 'h-[400px]'}>
                                       {isBarChart ? (
                                         <Bar data={chartData.data} options={chartData.options} />
                                       ) : (

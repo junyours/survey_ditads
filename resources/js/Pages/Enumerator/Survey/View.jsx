@@ -1,13 +1,13 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout"
 import { Button, Card, CardBody, Checkbox, Option, Radio, Select, Tab, TabPanel, Tabs, TabsBody, TabsHeader, Textarea } from "@material-tailwind/react"
 import { useEffect, useState } from "react"
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useToast } from "@/Contexts/ToastContext";
 import Loader from "@/Components/Loader";
 
-ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels, CategoryScale, LinearScale, BarElement);
 
 const colors = [
   "#f44336", "#4caf50", "#2196f3", "#ff9800", "#3f51b5",
@@ -84,6 +84,7 @@ const View = () => {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: false,
@@ -96,11 +97,58 @@ const View = () => {
             anchor: 'center',
             align: 'center',
             font: {
-              size: 12,
+              size: 14,
             },
             formatter: (value, context) => {
               let percentage = ((value / total) * 100).toFixed(2);
               return percentage > 0 ? `${percentage}%` : '';
+            },
+          },
+        },
+      },
+    };
+  };
+
+  const barChartConfig = (series, labels) => {
+    return {
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            data: series,
+            backgroundColor: colors,
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: false,
+          },
+          datalabels: {
+            color: '#000',
+            anchor: 'end',
+            align: 'end',
+            font: {
+              size: 14,
+            },
+            formatter: (value) => value > 0 ? value : '',
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+          },
+          y: {
+            ticks: {
+              autoSkip: false,
             },
           },
         },
@@ -286,9 +334,9 @@ const View = () => {
         {loading ? (
           <Loader />
         ) : (
-          <div className="max-w-[800px] mx-auto mt-[110px]">
+          <div className="mt-[110px]">
             <TabsBody>
-              <TabPanel value="Questions" className="max-sm:p-2">
+              <TabPanel value="Questions" className="max-sm:p-2 max-w-[800px] mx-auto">
                 <Card className="shadow-none border border-gray-200 mb-4 max-sm:mb-2">
                   <div className="bg-green-500 h-4 rounded-t-xl" />
                   <CardBody className="space-y-6 max-sm:space-y-4 max-sm:p-4">
@@ -421,66 +469,79 @@ const View = () => {
                 {responses.length > 0 && (
                   <div className="mt-4 space-y-4 max-sm:space-y-2 max-sm:mt-2">
                     {survey.question?.map((question, qIndex) => (
-                      <Card key={qIndex} className="shadow-none max-h-[350px] overflow-y-auto border border-gray-200">
-                        <CardBody className="space-y-6 max-sm:p-4">
-                          <div className="space-y-3">
-                            <span className="text-xs font-normal">Question {qIndex + 1}</span>
-                            <h1 className="text-sm font-medium">{question.text}</h1>
-                          </div>
-                          {(question.type === 'radio' || question.type === 'select' || question.type === 'checkbox') && (
-                            <div>
+                      <div key={qIndex}>
+                        {(question.type === 'radio' || question.type === 'select' || question.type === 'checkbox') && (
+                          <Card className="shadow-none border border-gray-200">
+                            <CardBody className="space-y-6 max-sm:p-4">
+                              <div className="space-y-3">
+                                <span className="text-xs font-normal">Question {qIndex + 1}</span>
+                                <h1 className="text-sm font-medium">{question.text}</h1>
+                              </div>
                               {(() => {
-                                const { series, labels } = calculateResponseData(question)
-                                const chartData = pieChartConfig(series, labels)
+                                const { series, labels } = calculateResponseData(question);
+                                const isBarChart = question.option.length > 8
+                                const chartData = isBarChart ? barChartConfig(series, labels) : pieChartConfig(series, labels);
                                 return (
-                                  <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-                                    <div className="flex items-center justify-center">
-                                      <div style={{ width: '200px', height: '200px' }}>
+                                  <div className={`grid gap-4 ${!isBarChart ? 'grid-cols-2' : ''} max-sm:grid-cols-1`}>
+                                    <div className={question.option.length > 10 ? 'h-[800px]' : 'h-[400px]'}>
+                                      {isBarChart ? (
+                                        <Bar data={chartData.data} options={chartData.options} />
+                                      ) : (
                                         <Pie data={chartData.data} options={chartData.options} />
-                                      </div>
+                                      )}
                                     </div>
-                                    <div className="space-y-2 flex flex-col justify-center items-start">
-                                      {question.option.map((option, oIndex) => {
-                                        const counts = series[oIndex]
-                                        return (
-                                          <div key={oIndex} className="w-full flex justify-between items-center gap-2">
-                                            <div className="flex items-center gap-2">
-                                              <div>
-                                                <div
-                                                  style={{ backgroundColor: colors[oIndex] }}
-                                                  className="size-4 rounded-full"
-                                                ></div>
+                                    {!isBarChart && (
+                                      <div className="space-y-2 flex flex-col justify-center items-start">
+                                        {question.option.map((option, oIndex) => {
+                                          const counts = series[oIndex];
+                                          return (
+                                            <div key={oIndex} className="w-full flex justify-between items-center gap-2">
+                                              <div className="flex items-center gap-2">
+                                                <div>
+                                                  <div
+                                                    style={{ backgroundColor: colors[oIndex] }}
+                                                    className="size-4 rounded-full"
+                                                  ></div>
+                                                </div>
+                                                <p className="text-sm font-normal">{option.text}</p>
                                               </div>
-                                              <p className="text-sm font-normal">{option.text}</p>
+                                              <div>
+                                                <span>{counts}</span>
+                                              </div>
                                             </div>
-                                            <div>
-                                              <span>{counts}</span>
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })()}
-                            </div>
-                          )}
-                          {question.type === 'input' && (
-                            <div className="space-y-2">
-                              {responses.map((res, resIndex) => {
-                                const answer = res.answer.find(ans => ans.question_id === question.id)
-                                if (answer) {
-                                  return (
-                                    <p key={resIndex} className="text-sm font-normal p-2 bg-gray-100 rounded-md">
-                                      {answer.text}
-                                    </p>
-                                  )
-                                }
-                              })}
-                            </div>
-                          )}
-                        </CardBody>
-                      </Card>
+                            </CardBody>
+                          </Card>
+                        )}
+                        {question.type === 'input' && (
+                          <Card className="shadow-none border overflow-hidden border-gray-200 max-h-[500px]">
+                            <CardBody className="space-y-6 max-sm:p-4">
+                              <div className="space-y-3">
+                                <span className="text-xs font-normal">Question {qIndex + 1}</span>
+                                <h1 className="text-sm font-medium">{question.text}</h1>
+                              </div>
+                              <div className="overflow-y-auto max-h-[360px] space-y-2">
+                                {responses.map((res, resIndex) => {
+                                  const answer = res.answer.find(ans => ans.question_id === question.id)
+                                  if (answer) {
+                                    return (
+                                      <p key={resIndex} className="text-sm font-normal p-2 bg-gray-100 rounded-md">
+                                        {answer.text}
+                                      </p>
+                                    )
+                                  }
+                                })}
+                              </div>
+                            </CardBody>
+                          </Card>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}

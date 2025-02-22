@@ -100,6 +100,7 @@ const View = () => {
         ],
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -112,7 +113,7 @@ const View = () => {
           datalabels: {
             color: '#000',
             anchor: 'end',
-            align: 'top',
+            align: 'end',
             font: {
               size: 14,
             },
@@ -120,8 +121,13 @@ const View = () => {
           },
         },
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
+          },
+          y: {
+            ticks: {
+              autoSkip: false,
+            },
           },
         },
       },
@@ -206,7 +212,7 @@ const View = () => {
                       <div key={qIndex}>
                         {(question.type === 'radio' || question.type === 'select' || question.type === 'checkbox') && (
                           <Card className="shadow-none border border-gray-200">
-                            <CardBody className="space-y-6">
+                            <CardBody className="space-y-6 max-sm:p-4">
                               <div className="space-y-3">
                                 <span className="text-xs font-normal">Question {qIndex + 1}</span>
                                 <h1 className="text-sm font-medium">{question.text}</h1>
@@ -216,8 +222,8 @@ const View = () => {
                                 const isBarChart = question.option.length > 8
                                 const chartData = isBarChart ? barChartConfig(series, labels) : pieChartConfig(series, labels);
                                 return (
-                                  <div className={!isBarChart ? 'grid grid-cols-2 gap-4' : ''}>
-                                    <div className="w-full mx-auto h-[300px] sm:h-[400px]">
+                                  <div className={`grid gap-4 ${!isBarChart ? 'grid-cols-2' : ''} max-sm:grid-cols-1`}>
+                                    <div className={question.option.length > 10 ? 'h-[800px]' : 'h-[400px]'}>
                                       {isBarChart ? (
                                         <Bar data={chartData.data} options={chartData.options} />
                                       ) : (
@@ -255,7 +261,7 @@ const View = () => {
                         )}
                         {question.type === 'input' && (
                           <Card className="shadow-none border overflow-hidden border-gray-200 max-h-[500px]">
-                            <CardBody className="space-y-6">
+                            <CardBody className="space-y-6 max-sm:p-4">
                               <div className="space-y-3">
                                 <span className="text-xs font-normal">Question {qIndex + 1}</span>
                                 <h1 className="text-sm font-medium">{question.text}</h1>
@@ -283,7 +289,6 @@ const View = () => {
             </TabsBody>
           </div>
         )}
-
       </AuthenticatedLayout>
     </Tabs>
   )
