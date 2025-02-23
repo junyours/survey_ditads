@@ -59,10 +59,18 @@ class EnumeratorController extends Controller
     {
         $user_id = auth()->user()->id;
 
-        $responses = Response::where('survey_id', $request->survey_id)
+        $responses = Response::select('id', 'survey_id')
             ->where('enumerator_id', $user_id)
-            ->with('answer.answer_option')
-            ->get();
+            ->with([
+                'answer' => function ($query) {
+                    $query->select('id', 'question_id', 'response_id', 'text');
+                    $query->with([
+                        'answer_option' => function ($query) {
+                            $query->select('answer_id', 'option_id');
+                        }
+                    ]);
+                },
+            ])->get();
 
         return response()->json($responses);
     }

@@ -33,9 +33,18 @@ class ViewerController extends Controller
             ->with('question.option')
             ->first();
 
-        $responses = Response::where('survey_id', $survey->id)
-            ->with('answer.answer_option')
-            ->get();
+        $responses = Response::select('id', 'survey_id')
+            ->where('survey_id', $survey->id)
+            ->with([
+                'answer' => function ($query) {
+                    $query->select('id', 'question_id', 'response_id', 'text');
+                    $query->with([
+                        'answer_option' => function ($query) {
+                            $query->select('answer_id', 'option_id');
+                        }
+                    ]);
+                },
+            ])->get();
 
         return response()->json([
             'survey' => $survey,
