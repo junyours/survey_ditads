@@ -306,7 +306,7 @@ const View = () => {
   return (
     <Tabs value={activeTab}>
       <AuthenticatedLayout title={survey.title} button={
-        <Button onClick={handleSubmit} color="green" loading={processing} className={activeTab !== 'Questions' ? 'hidden' : ''}>
+        <Button onClick={handleSubmit} color="green" loading={processing} className={(submitted || activeTab !== 'Questions') ? 'hidden' : ''}>
           Submit
         </Button>
       } tab={
