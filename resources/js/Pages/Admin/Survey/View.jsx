@@ -132,7 +132,7 @@ const View = () => {
             display: false,
           },
           tooltip: {
-            enabled: false,
+            enabled: true,
           },
           datalabels: {
             color: '#000',
@@ -379,7 +379,7 @@ const View = () => {
               <TabPanel value="Assignments" className="max-sm:p-2">
                 <Tbl title="Enumerators" data={dataTableAssignEnumerator} />
               </TabPanel>
-              <TabPanel value="Settings" className="max-sm:p-2">
+              <TabPanel value="Settings" className="max-w-[800px] mx-auto max-sm:p-2">
                 <Card className="shadow-none border border-gray-200">
                   <CardBody className="space-y-4 max-sm:p-4">
                     <h1 className="font-medium">Manage Survey</h1>
