@@ -8,6 +8,7 @@ use App\Models\Response;
 use App\Models\Survey;
 use App\Models\SurveyAssignment;
 use App\Models\User;
+use DB;
 use Hash;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -58,6 +59,18 @@ class AdminController extends Controller
         return response()->json($enumerator);
     }
 
+    public function updateEnumeratorStatus(Request $request)
+    {
+        User::where('id', $request->enumerator_id)
+            ->where('role', 'enumerator')
+            ->update([
+                'status' => $request->status
+            ]);
+
+        DB::table('sessions')->where('user_id', $request->enumerator_id)
+            ->delete();
+    }
+
     public function viewerList()
     {
         $viewers = User::where("role", "viewer")
@@ -73,6 +86,18 @@ class AdminController extends Controller
             ->first();
 
         return response()->json($viewer);
+    }
+
+    public function updateViewerStatus(Request $request)
+    {
+        User::where('id', $request->viewer_id)
+            ->where('role', 'viewer')
+            ->update([
+                'status' => $request->status
+            ]);
+
+        DB::table('sessions')->where('user_id', $request->viewer_id)
+            ->delete();
     }
 
     public function addViewer(Request $request)

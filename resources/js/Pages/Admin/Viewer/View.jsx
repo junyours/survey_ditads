@@ -1,12 +1,12 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout"
-import { Card, CardBody, Chip, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from '@material-tailwind/react';
+import { Card, CardBody, Chip, Switch, Tab, TabPanel, Tabs, TabsBody, TabsHeader } from '@material-tailwind/react';
 import { useEffect, useState } from "react";
 import User from '../../../../../public/images/user.png'
 import Inpt from "@/Components/Input";
 import axios from "axios";
 import Loader from "@/Components/Loader";
 
-const tabs = ["Personal Details"]
+const tabs = ["Personal Details", "Settings"]
 
 const View = () => {
   const [viewer, setViewer] = useState({})
@@ -29,6 +29,15 @@ const View = () => {
       .finally(() => {
         setLoading(false)
       })
+  }
+
+  const toggleStatus = async () => {
+    const newStatus = viewer.status === "active" ? "inactive" : "active"
+    setViewer(prev => ({ ...prev, status: newStatus }))
+    await axios.post(route('api.admin.update.viewer.status'), {
+      viewer_id,
+      status: newStatus
+    })
   }
 
   return (
@@ -87,6 +96,21 @@ const View = () => {
                       <Inpt value={viewer.middle_name === null ? '-' : viewer.middle_name} variant="standard" label="Middle Name" />
                       <Inpt value={viewer.gender} variant="standard" label="Gender" className="capitalize" />
                       <Inpt value={viewer.email} variant="standard" label="Email Address" />
+                    </div>
+                  </CardBody>
+                </Card>
+              </TabPanel>
+              <TabPanel value="Settings" className="max-sm:p-2">
+                <Card className="shadow-none border border-gray-200">
+                  <CardBody className="space-y-4 max-sm:p-4">
+                    <h1 className="font-medium">Manage Viewer</h1>
+                    <hr className="border-blue-gray-200" />
+                    <div className="flex justify-between items-center">
+                      <div className="space-y-1">
+                        <h1 className="font-normal text-sm">Set status</h1>
+                        <p className="text-xs font-normal">Once you deactivate this viewer, they will no longer be able to log in.</p>
+                      </div>
+                      <Switch checked={viewer.status === "active"} onChange={toggleStatus} color="green" label={viewer.status} labelProps={{ className: "font-normal capitalize text-sm" }} />
                     </div>
                   </CardBody>
                 </Card>

@@ -9,10 +9,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
   Route::get('/api/admin/enumerators/list', [AdminController::class, 'enumeratorList'])->name('api.admin.enumerator.list');
   Route::post('/api/admin/enumerators', [AdminController::class, 'addEnumerator'])->name('api.admin.add.enumerator');
   Route::get('/api/admin/enumerators/view', [AdminController::class, 'viewEnumerator'])->name('api.admin.view.enumerator');
+  Route::post('/api/admin/enumerators/view', [AdminController::class, 'updateEnumeratorStatus'])->name('api.admin.update.enumerator.status');
 
   Route::get('/api/admin/viewers', [AdminController::class, 'viewerList'])->name('api.admin.viewer.list');
   Route::post('/api/admin/viewers', [AdminController::class, 'addViewer'])->name('api.admin.add.viewer');
   Route::get('/api/admin/viewers/view', [AdminController::class, 'viewViewer'])->name('api.admin.view.viewer');
+  Route::post('/api/admin/viewers/view', [AdminController::class, 'updateViewerStatus'])->name('api.admin.update.viewer.status');
 
   Route::get('/api/admin/surveys/list', [AdminController::class, 'surveyList'])->name('api.admin.survey.list');
   Route::post('/api/admin/surveys/publish', [AdminController::class, 'publishSurvey'])->name('api.admin.publish.survey');
