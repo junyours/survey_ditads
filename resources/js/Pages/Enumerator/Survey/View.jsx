@@ -130,7 +130,7 @@ const View = () => {
             display: false,
           },
           tooltip: {
-            enabled: false,
+            enabled: true,
           },
           datalabels: {
             color: '#000',
